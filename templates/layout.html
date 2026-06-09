@@ -1,0 +1,20 @@
+{% load django_vite %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Pulseboard demonstrates Django as the backend for a React application using Inertia."
+    >
+    <title>Pulseboard</title>
+    {% vite_hmr_client %}
+    {% vite_react_refresh %}
+    {% vite_asset 'src/main.jsx' %}
+    {% block inertia_head %}{% endblock inertia_head %}
+  </head>
+  <body>
+    {% block inertia %}{% endblock inertia %}
+  </body>
+</html>
