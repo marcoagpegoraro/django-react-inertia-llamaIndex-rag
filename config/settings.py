@@ -130,4 +130,17 @@ INERTIA_VERSION = "1.0"
 CSRF_COOKIE_NAME = "XSRF-TOKEN"
 CSRF_HEADER_NAME = "HTTP_X_XSRF_TOKEN"
 
+RAG_STORAGE_DIR = Path(os.environ.get("RAG_STORAGE_DIR", BASE_DIR / ".rag"))
+RAG_POLICY_FILE = Path(
+    os.environ.get(
+        "RAG_POLICY_FILE",
+        BASE_DIR / "studio" / "data" / "company_policy.txt",
+    )
+)
+RAG_COLLECTION_NAME = os.environ.get("RAG_COLLECTION_NAME", "company-policy")
+RAG_TOP_K = int(os.environ.get("RAG_TOP_K", "3"))
+RAG_CHUNK_SIZE = int(os.environ.get("RAG_CHUNK_SIZE", "360"))
+RAG_CHUNK_OVERLAP = int(os.environ.get("RAG_CHUNK_OVERLAP", "60"))
+RAG_EMBED_DIM = int(os.environ.get("RAG_EMBED_DIM", "256"))
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

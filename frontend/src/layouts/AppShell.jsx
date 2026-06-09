@@ -1,6 +1,7 @@
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import FolderOpenRoundedIcon from "@mui/icons-material/FolderOpenRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import PolicyRoundedIcon from "@mui/icons-material/PolicyRounded";
 import RouteRoundedIcon from "@mui/icons-material/RouteRounded";
 import {
   Alert,
@@ -28,6 +29,7 @@ const drawerWidth = 280;
 const iconMap = {
   dashboard: <DashboardRoundedIcon />,
   library: <FolderOpenRoundedIcon />,
+  policy: <PolicyRoundedIcon />,
   route: <RouteRoundedIcon />,
 };
 

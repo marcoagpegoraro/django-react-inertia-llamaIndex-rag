@@ -26,6 +26,11 @@ class InertiaSharedDataMiddleware:
                         "href": reverse("studio:library"),
                         "icon": "library",
                     },
+                    {
+                        "label": "Policy assistant",
+                        "href": reverse("studio:policy_assistant"),
+                        "icon": "policy",
+                    },
                 ],
             },
             flash=self._serialize_flash(request),

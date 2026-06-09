@@ -2,6 +2,8 @@
 
 Pulseboard is a demo Django + React application that uses `inertia-django` to bridge classic Django views and a React frontend. The use case is a content planning dashboard: Django owns the models, filtering, validation, and redirects; React and Material UI handle the interactive workspace.
 
+The project also includes a policy assistant page that demonstrates how Django can call a local LlamaIndex + Chroma retrieval pipeline and send the results back to React through Inertia.
+
 ## Stack
 
 - Django 5.2 LTS
@@ -10,6 +12,7 @@ Pulseboard is a demo Django + React application that uses `inertia-django` to br
 - Vite + `django-vite`
 - Material UI
 - SQLite
+- LlamaIndex + Chroma for a local RAG demo
 
 ## Local setup
 
@@ -61,8 +64,16 @@ Then open `http://127.0.0.1:8000`.
 ```bash
 python manage.py test
 python manage.py seed_demo --reset
+python manage.py build_policy_index --force
 pnpm build
 ```
+
+## Policy assistant RAG demo
+
+- Open `http://127.0.0.1:8000/policy-assistant/` to try the RAG page.
+- The source document lives at `studio/data/company_policy.txt`.
+- Django uses LlamaIndex to chunk the policy text and writes the Chroma vector store under `.rag/chroma/`.
+- The example is self-contained and does not require an external LLM API key. It uses a local retrieval-backed synthesis step so the full demo works out of the box.
 
 ## How the bridge works
 

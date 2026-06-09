@@ -37,3 +37,13 @@ class CampaignItemForm(forms.ModelForm):
 
 class CampaignItemStatusForm(forms.Form):
     status = forms.ChoiceField(choices=CampaignItem.Status.choices)
+
+
+class PolicyQuestionForm(forms.Form):
+    question = forms.CharField(
+        max_length=300,
+        strip=True,
+    )
+
+    def clean_question(self):
+        return " ".join(self.cleaned_data["question"].split())

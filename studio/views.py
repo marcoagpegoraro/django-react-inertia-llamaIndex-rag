@@ -8,8 +8,16 @@ from django.urls import reverse
 from django.utils import timezone
 from inertia import inertia
 
-from .forms import CampaignItemForm, CampaignItemStatusForm
+from .forms import CampaignItemForm, CampaignItemStatusForm, PolicyQuestionForm
 from .models import CampaignItem
+from .services.policy_rag import get_policy_rag_service
+
+
+POLICY_ASSISTANT_EXAMPLES = [
+    "How much notice do I need to give before taking PTO?",
+    "When does travel reimbursement need manager approval?",
+    "How quickly should security incidents be reported?",
+]
 
 
 def _request_data(request):
@@ -57,6 +65,7 @@ def _build_routes(sample_item=None):
     routes = {
         "dashboard": reverse("studio:dashboard"),
         "library": reverse("studio:library"),
+        "policyAssistant": reverse("studio:policy_assistant"),
         "createItem": reverse("studio:create_item"),
     }
 
@@ -286,6 +295,58 @@ def campaign_detail(request, item_id):
         },
         "relatedItems": [_serialize_item(related_item, today) for related_item in related_items],
         "routes": _build_routes(item),
+    }
+
+
+@inertia("Studio/PolicyAssistant")
+def policy_assistant(request):
+    sample_item = CampaignItem.objects.order_by("id").first()
+    service = get_policy_rag_service()
+    question = request.GET.get("question", "")
+    question_error = ""
+    assistant_error = ""
+
+    try:
+        assistant_meta = service.get_status()
+    except Exception as exc:
+        assistant_meta = {
+            "policyFile": "studio/data/company_policy.txt",
+            "collectionName": "company-policy",
+            "chunkCount": 0,
+            "lastIndexedAt": None,
+            "policyUpdatedAt": None,
+            "embeddingModel": "keyword-hash-256-v1",
+            "generationMode": "retrieval-backed local synthesis",
+        }
+        assistant_error = f"Could not prepare the policy index: {exc}"
+
+    answer_result = None
+    if "question" in request.GET:
+        form = PolicyQuestionForm(request.GET)
+        if form.is_valid() and not assistant_error:
+            question = form.cleaned_data["question"]
+            try:
+                answer_result = service.answer(question).to_dict()
+            except Exception as exc:
+                assistant_error = f"Could not run the policy query: {exc}"
+        elif form.errors.get("question"):
+            question_error = form.errors["question"][0]
+
+    return {
+        "shell": {
+            "title": "Policy assistant",
+            "description": (
+                "Django runs a local LlamaIndex retrieval flow over a Chroma vector "
+                "store built from a plain-text company policy file."
+            ),
+        },
+        "question": question,
+        "questionError": question_error,
+        "assistantError": assistant_error,
+        "answerResult": answer_result,
+        "assistantMeta": assistant_meta,
+        "examples": POLICY_ASSISTANT_EXAMPLES,
+        "routes": _build_routes(sample_item),
     }
 
 
